@@ -8,14 +8,16 @@ const ranges = player.querySelectorAll('.player__slider');
 
 // Toggle play/pause
 function togglePlay() {
-  const method = video.paused ? 'play' : 'pause';
-  video[method]();
+  if (video.paused) {
+    video.play();
+  } else {
+    video.pause();
+  }
 }
 
-// Update play/pause button
+// Update button icon
 function updateButton() {
-  const icon = video.paused ? '►' : '❚ ❚';
-  toggle.textContent = icon;
+  toggle.textContent = video.paused ? '►' : '❚ ❚';
 }
 
 // Skip forward/backward
@@ -23,9 +25,9 @@ function skip() {
   video.currentTime += parseFloat(this.dataset.skip);
 }
 
-// Handle range (volume/speed)
+// Handle volume and speed changes
 function handleRangeUpdate() {
-  video[this.name] = this.value;
+  video[this.name] = parseFloat(this.value);
 }
 
 // Update progress bar
@@ -34,7 +36,7 @@ function handleProgress() {
   progressBar.style.width = `${percent}%`;
 }
 
-// Scrub (seek video)
+// Scrub (seek)
 function scrub(e) {
   const scrubTime = (e.offsetX / progress.offsetWidth) * video.duration;
   video.currentTime = scrubTime;
@@ -53,5 +55,5 @@ ranges.forEach(range => range.addEventListener('input', handleRangeUpdate));
 let mousedown = false;
 progress.addEventListener('click', scrub);
 progress.addEventListener('mousemove', e => mousedown && scrub(e));
-progress.addEventListener('mousedown', () => (mousedown = true));
-progress.addEventListener('mouseup', () => (mousedown = false));
+progress.addEventListener('mousedown', () => mousedown = true);
+progress.addEventListener('mouseup', () => mousedown = false);
