@@ -1,12 +1,13 @@
 const player = document.querySelector('.player');
 const video = player.querySelector('.viewer');
 const progress = player.querySelector('.progress');
-const progressBar = player.querySelector('.progress__filled');
+const progressFilled = player.querySelector('.progress__filled');
 const toggle = player.querySelector('.toggle');
 const skipButtons = player.querySelectorAll('[data-skip]');
-const ranges = player.querySelectorAll('.player__slider');
+const volumeSlider = document.querySelector('input[name="volume"]');
+const speedSlider = document.querySelector('input[name="playbackSpeed"]');
 
-// Toggle play/pause
+// Play / Pause toggle
 function togglePlay() {
   if (video.paused) {
     video.play();
@@ -15,28 +16,34 @@ function togglePlay() {
   }
 }
 
-// Update button icon
+// Update play/pause button icon
 function updateButton() {
   toggle.textContent = video.paused ? '►' : '❚ ❚';
-}
-
-// Skip forward/backward
-function skip() {
-  video.currentTime += parseFloat(this.dataset.skip);
-}
-
-// Handle volume and speed changes
-function handleRangeUpdate() {
-  video[this.name] = parseFloat(this.value);
 }
 
 // Update progress bar
 function handleProgress() {
   const percent = (video.currentTime / video.duration) * 100;
-  progressBar.style.width = `${percent}%`;
+  progressFilled.style.width = `${percent}%`;
 }
 
-// Scrub (seek)
+// Rewind / Skip
+function skip() {
+  const skipTime = parseFloat(this.dataset.skip);
+  video.currentTime += skipTime;
+}
+
+// Volume control
+function handleVolume() {
+  video.volume = parseFloat(this.value);
+}
+
+// Playback speed control
+function handleSpeed() {
+  video.playbackRate = parseFloat(this.value);
+}
+
+// Scrub progress bar
 function scrub(e) {
   const scrubTime = (e.offsetX / progress.offsetWidth) * video.duration;
   video.currentTime = scrubTime;
@@ -49,8 +56,11 @@ video.addEventListener('pause', updateButton);
 video.addEventListener('timeupdate', handleProgress);
 
 toggle.addEventListener('click', togglePlay);
-skipButtons.forEach(button => button.addEventListener('click', skip));
-ranges.forEach(range => range.addEventListener('input', handleRangeUpdate));
+
+skipButtons.forEach(btn => btn.addEventListener('click', skip));
+
+volumeSlider.addEventListener('input', handleVolume);
+speedSlider.addEventListener('input', handleSpeed);
 
 let mousedown = false;
 progress.addEventListener('click', scrub);
